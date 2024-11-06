@@ -8,9 +8,9 @@
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 	<groupId>com.axity.com</groupId>
-	<artifactId>usuarios</artifactId>
+	<artifactId>ms-usuarios</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>usuarios</name>
+	<name>ms-usuarios</name>
 	<description>Curso Microservicios</description>
 	<url/>
 	<licenses>
