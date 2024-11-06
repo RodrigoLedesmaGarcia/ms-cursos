@@ -2,11 +2,15 @@ package com.axity.com.ms_cursos.controller;
 
 import com.axity.com.ms_cursos.entity.Curso;
 import com.axity.com.ms_cursos.services.CursoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -37,7 +41,11 @@ public class Controller {
 
     // http://localhost:8082/
     @PostMapping("/")
-    public ResponseEntity<?> crear (@RequestBody Curso curso) {
+    public ResponseEntity<?> crear (@Valid @RequestBody Curso curso, BindingResult result) {
+        if(result.hasErrors()) {
+            return validar(result);
+        }
+
         Curso cursodb = service.guardar(curso);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(cursodb);
@@ -45,7 +53,11 @@ public class Controller {
 
     // http://localhost:8082/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<?> editar (@RequestBody Curso curso, @PathVariable Long id){
+    public ResponseEntity<?> editar (@Valid @RequestBody Curso curso, BindingResult result ,@PathVariable Long id){
+        if(result.hasErrors()) {
+            return validar(result);
+        }
+
         Optional<Curso> optional = service.porId(id);
         if(optional.isPresent()) {
             Curso cursodb = optional.get();
@@ -70,4 +82,14 @@ public class Controller {
 
         return ResponseEntity.notFound().build();
     }
+
+
+    private static ResponseEntity<Map<String, String>> validar(BindingResult result) {
+        Map<String, String> errores = new HashMap<>();
+        result.getFieldErrors().forEach(errr -> {
+            errores.put(errr.getField(), "el campo " + errr.getField()+ " " + errr.getDefaultMessage());
+        });
+
+        return ResponseEntity.badRequest().body(errores);
+    }// fin del metodo validar
 }
